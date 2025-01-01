@@ -1,5 +1,5 @@
-# afustamo.github.io
+# Materiale didattico per statistica
 
-Ciao ecco qui
+In questa pagina vi sono diversi file contententi il materiale per i corsi di statistica I e II di ingegneria gestionale all'Università di Bergamo
 
 per andare all' [about](https://afustamo.github.io/about)
