@@ -1,0 +1,432 @@
+---
+title: "Statistica 7a lezione (31/05/2024)"
+author: "Alessandro Fusta Moro"
+format: html
+editor: visual
+toc: true
+toc-expand: true
+toc-depth: 4
+---
+
+## Definizioni
+
+#### Variabile
+
+Una *variabile* è una caratteristica il cui valore può variare tra i soggetti di un campione o di una popolazione.
+
+##### Campione casuale semplice
+
+Un *campione casuale semplice* di $n$ soggetti di una popolazione è un campione che ha la medesima probabilità di essere selezionato di qualsiasi altro possibile campione avente dimensione $n$.
+
+#### Probabilità
+
+Nell'osservazione di un fenomeno aleatorio, la *probabilità* di un particolare esito è la proporzione di volte in cui quell'esito si verificherebbe in una sequenza arbitrariamente lunga di osservazioni simili, sotto le stesse condizioni.
+
+#### Spazio campionario
+
+Per un fenomeno aleatorio, l'insieme di tutti i possibili esiti è detto *spazio campionario*.
+
+#### Variabile aleatoria
+
+Per un fenomeno aleatorio, una *variabile aleatoria* è una funzione che assegna un valore numerico a ogni punto dello spazio campionario. È prassi comune utilizzare le lettere maiuscole per rappresentare le variabili aleatorie e le minuscole per i singoli possibili valori.
+
+#### Distribuzione di probabilità
+
+Una *distribuzione di probabilità* elenca i possibili valori di una variabile aleatoria e le rispettive probabilità. La *funzione di distribuzione di probabilità* $f(x)$ restituisce la probabilità che la variabile aleatoria $X$ restituisca il valore $x$. L'area sottesa da tale curva $f(x)$ equivale a 1 ovvero la probabilità dello spazio campionario. La *funzione di distribuzione cumulata* $F(x)$ restituisce la probabilità che la variabile aleatoria $X$ sia minore o uguale del valore $x$.
+
+$$f(x)=P(X=x) \qquad \text{con} \quad \int_xf(x)=1$$ $$F(x)=P(X \leq x) \qquad \text{con} \quad F(+ \infty)=1$$
+
+```{r}
+plot(dnorm,xlim=c(-3,3)) #funzione di densità di probabilità
+```
+
+```{r}
+plot(pnorm,xlim=c(-3,3)) #funzione di distribuzione cumulata
+```
+
+#### Valore atteso di una variabile aleatoria discreta o continua
+
+Il valore atteso $E()$ è il valore che ci aspettiamo come media su una serie arbitrariamente lunga di osservazioni della variabile aleatoria.
+
+$$E(X)=\mu= \qquad \text{discreta:} \sum_x x f(x)dx \qquad \text{continua:}\int_x x f(x)dx$$
+
+#### Varianza di una variabile aleatoria discreta o continua
+
+La *varianza* ($\sigma^2$) riflette la variabilità di una sequenza prolungata di osservazioni con la stessa distribuzione di probabilità. La *deviazione standard* ($\sigma$) è la radice quadrata positiva della varianza. $$var(X)=\sigma^2_x=E[(X-\mu)^2]= \qquad \text{discreta:}\sum_x (x-\mu)^2 f(x)dx  \qquad \text{continua:}\int_x (x-\mu)^2 f(x)dx$$
+
+#### Traformazioni lineari
+
+Supponiamo che la variabile aleatoria $X$ sia una trasformazione lineare di un altra variabile aleatoria $Y$. Qual'è la media e la varianza? $$X=a+bY$$ $$E(X)=\mu_x=E(a+ bY)=a + bE(Y)=a+b\mu_y$$ $$var(X)=E[(X-\mu_x)^2]=E[((a+bY)-(a+b\mu_y))^2]=E[b^2(Y-\mu_y)^2]=b^2var(Y)=b^2 \sigma^2_y$$
+
+#### Standardizzazione di una variabile aleatoria
+
+Una comune trasformazione lineare di $X$ è la *standardizzazione*. La nuova variabile aleatoria $Z$ rappresenta il *numero di deviazioni standard* di distanza tra $X$ e la sua media. Indipendentemente dalla scala della variabile aleatoria originaria $X$, i valori di $Z$ variano attorno a zero con una deviazione standard pari a 1.
+
+$$Z=\frac{X-\mu_x}{\sigma_x} \qquad \text{con} \qquad E(Z)=0 \quad var(Z)=1$$
+
+#### Quantili
+
+Per una variabile aleatoria continua, il *quantile di ordine p* è il valore di $x$ in cui la funzione di distribuzione cumulata assume il valore $p$. Per calcolare i valori dei quantili, usiamo la funzione inversa $F^{-1}$. Ad esempio, nel caso di una distribuzione esponenziale, la funzione di ripartizione $F(x)$ è $F(x;\lambda)=1-e^{-\lambda x}$. L'inversa è $q=-log(1-p)/\lambda$. La usiamo per calcolare, ad esempio, il quartile di ordine $0.4$: $q=-log(1-0.4)/1=0.511$. In R basta usare la lettera *q* davanti alla tipologia di distribuzione. Si usa il termine percentile in relazione al valore 100 (il quantile di ordine 0.4 è uguale al 40-esimo percentile).
+
+```{r}
+#| eval: false
+qexp(0.05, 1); qexp(0.4,1); qexp(0.95,1) #esponenziale
+```
+
+```{r}
+#| echo: false
+cat("5-esimo percentile:",qexp(0.05, 1))
+cat("40-esimo percentile:",qexp(0.4,1))
+cat("95-esimo percentile:",qexp(0.95,1))
+```
+
+```{r}
+#| echo: false
+plot(dexp,xlim=c(0,3.5),ylab="f(x)",main="funzione di densità di probabilità di una distribuzione esponenziale")
+abline(v=qexp(0.05),col="purple")
+text(x=qexp(0.05),y=0.8,label="5-esimo percentile",col="purple",srt=90,pos =1)
+abline(v=qexp(0.4),col="orange")
+text(x=qexp(0.4),y=0.8,label="40-esimo percentile",col="orange",srt=90,pos =1)
+abline(v=qexp(0.95),col="red")
+text(x=qexp(0.95),y=0.8,label="95-esimo percentile",col="red",srt=90,pos =1)
+```
+
+```{r}
+#| eval: false
+qnorm(0.025); qnorm(0.5); qnorm(0.975) #normale
+```
+
+```{r}
+#| echo: false
+cat("2.5-esimo percentile:",qnorm(0.025))
+cat("50-esimo percentile:",qnorm(0.5))
+cat("97.5-esimo percentile:",qnorm(0.975))
+```
+
+```{r}
+#| echo: false
+plot(dnorm,xlim=c(-3,3),ylab="f(x)",main="funzione di densità di probabilità di una distribuzione normale")
+abline(v=qnorm(0.025),col="purple")
+text(x=qnorm(0.025),y=0.3,label="2.5-esimo percentile",col="purple",srt=90,pos =1)
+abline(v=qnorm(0.5),col="orange")
+text(x=qnorm(0.5),y=0.3,label="50-esimo percentile",col="orange",srt=90,pos =1)
+abline(v=qnorm(0.975),col="red")
+text(x=qnorm(0.975),y=0.3,label="97.5-esimo percentile",col="red",srt=90,pos =1)
+```
+
+## Molteplici variabili aleatorie
+
+Più spesso siamo interessati a studiare contemporaneamente più variabili aleatorie. In questo caso la funzione di densità di probabilità è valutata congiuntamente per tutte le variabili aleatorie. Questo perché alcune variabili aleatorie potrebbero mostrare un comportamento simile. La distribuzione di probabilità che assegna ad ogni possibile combinazione delle variabili aleatorie viene chiamata *distribuzione di probabilità congiunta* e si indica con $f(x_1,x_2,\ldots,x_n)$ con $n$ variabili aleatorie. Nel caso di due variabili aleatorie ($X$ e $Y$) viene detto "caso bivariato". Studiare più variabili aleatorie contemporaneamente introduce il concetto di indipendenza. Infatti, se tra le due variabili aleatorie vi è qualsiasi sorta di relazione, al verificarsi di un valore $x$ cambierà la probabilità rispetto alla variabile $Y$ seguendo la relazione che sussiste tra i due.
+
+### Covarianza e correlazione
+
+Ad esempio definiamo le nostre due variabili aleatorie quantitative: $X$ la radiazione solare e $Y$ la temperatura. Ovviamente, quando la radiazione solare è maggiore (ad esempio d'estate) ci aspettiamo dei livelli di temperatura maggiori. Quindi, estraendo a caso dal dataset *Agrimonia* 500 osservazioni visualizziamo le coppie di realizzazioni.
+
+```{r}
+#| echo: false
+
+load("data/Agrimonia_dataset.Rdata")
+set.seed(7)
+n<-500
+agr_df <- AgrImOnIA_Dataset_v_3_0_0[sample(1:nrow(AgrImOnIA_Dataset_v_3_0_0),n),]
+x <- agr_df$WE_solar_radiation
+x <- x/10^6
+y <- agr_df$WE_temp_2m
+par(mfrow = c(1,2))
+hist(x,main="X = radiazione solare",xlab="J mm^(-2)")
+hist(y,main="Y = temperatura",xlab="°C")
+par(mfrow = c(1,1))
+plot(x,y,xlab="radiazione solare [J mm^(-2)]",ylab="temperatura [°C]",main = "grafico a dispersione della radiazione solare e della temperatura")
+```
+
+Dal grafico si evince chiaramente che le due variabili esibiscono una certa relazione. Quindi, conoscendo al radiazione solare, possiamo predire la temperatura con maggior precisione. In altre parole, la funzione di densità di probabilità della variabile $Y$ è condizionata dalla variabile $X$ cioè $$f(y|x)=\frac{f(x,y)}{f(x)}$$
+
+Se le variabili aleatorie non sono indipendenti tra di esse esiste un'associazione. Per misurare tale associazione, si utilizza il concetto di *covarianza* definito come il valore atteso del prodotto tra gli scarti dalle rispettive medie. La covarianza però dipende dall'unità di misura, per cui utilizziamo le variabili standardizzate per ottenere l'indipendenza dall'unità di misura, e la covarianza viene definita *correlazione*. $$cov(X,Y)=E[(X-\mu_x)(Y-\mu_y)]$$ $$corr(X,Y)=E \left[\left(\frac{X-\mu_x}{\sigma_x}\right)\left(\frac{Y-\mu_y}{\sigma_y}\right)\right]=\frac{cov(X,Y)}{\sigma_x\sigma_y}$$
+
+La covarianza è positiva se condividono le stesse variazioni rispetto alla media altrimenti sarà detta negativa. In altre parole, quando l'associazione è positiva, al verificarsi di un evento $x$ **maggiore** della sua media $\mu_x$ sarà più probabile che l'altra variabile $Y$ assuma un valore $y$ **maggiore** della sua media $\mu_y$ e viceversa. Quando invece l'associazione è negativa, al verificarsi di un valore $x$ **maggiore** della sua media $\mu_x$, sarà più probabile che la variabile aleatoria $Y$ assuma un valore **minore** della sua media $\mu_y$ e viceversa.
+
+Calcoliamo la covarianza e la correlazione tra la radiazione solare e la temperatura:
+
+```{r}
+cov(x,y) #covarianza
+cov(y,x)/sqrt(var(x)*var(y)) #correlazione
+```
+
+Tra le due variabili aleatorie considerate è ragionevole assumere che la temperatura condizioni la quantità di vegetazione e non viceversa. Di conseguenza, chiameremo la quantità di vegetazione come *variabile di risposta* e la temperatura come *variabile esplicativa*. Per indagare la relazione tra le due variabili utilizziamo dei *modelli statistici* che sono una semplice approssimazione per la vera relazione tra queste variabili nella popolazione. La realtà è più complessa e non è mai descritta perfettamente da un modello, che è comunque uno strumento per rendere più chiara la nostra percezione della realtà.
+
+### Modello lineare
+
+A causa dell'insita casualità delle variabili considerate, il modello statistico non si pone l'obiettivo di predire esattamente una variabile casuale $Y$ a partire dalle osservazioni $x$ della variabile $X$, ma assume di predire la media della distribuzione condizionata di $Y$ per quel valore di $x$. Ovvero: $$E(Y|x)=\beta_0 + \beta_1x$$ La linearità del modello si riferisce al fatto che l'equazione è *lineare nei parametri* $\beta_0$ e $\beta_1$. I modelli lineari più comuni specificano una distribuzione di probabilità Gaussiana intorno alla aspettativa condizionata $E(Y|x)$, con una certa varianza $\sigma^2$. Quindi per l'osservazione $i$ si assume che la distribuzione di probabilità per $Y_i$ sia una normale: $f(Y_i|x) \sim N(\beta_0 + \beta_1x_i,\sigma^2)$, dove la varianza condizionata $\sigma^2$ è la stessa per tutte le osservazioni (omoschedasticità). Un modo alternativo per esprimere $Y_i$ è: $$Y_i = \beta_0 + \beta_1x_i + \epsilon_i$$ dove $\epsilon_i$ è la deviazione di $Y_i$ da $E(Y_i)$ ed è chiamato *termine d'errore*. Con dati campionari $\{(x_i,y_i)\}$, non conosciamo $\{\epsilon_i\}$ perché non conosciamo i valori dei parametri $\beta_0$ e $\beta_1$. Però, possiamo utilizzare i dati campionari $\{(x_i,y_i)\}$ per stimarli, assieme a $E(Y_i)$ e $\epsilon_i$. Le stime vengono generalmente indicate con un "cappello" (es. $\hat{\beta}_0$ è la stima di $\beta_0$). La stima di $E(Y_i)$ viene chiamata $\hat{\mu}_i$ ed è trovata tramite un'*equazione di predizione* $$\hat{\mu}_i=\hat{\beta}_0 + \hat{\beta}_1x_i$$ con le stime dei due parametri $\beta_0$ e $\beta_1$. La differenza tra la stima di $E(Y_i)$ e il dato osservato $y_i$ rappresenta una stima del termine d'errore, $\epsilon_i$, e si indica con $e_i$ e viene chiamato *residuo*. In altre parole $y_i = \hat{\mu}_i + e_i$ ovvero $$y_i=\hat{\beta}_0 + \hat{\beta}_1x_i+e_i$$ dove $e_i$
+
+Inizialmente, per stimare i parametri del modello utilizziamo una particolare statistica denominata *stimatore*, che restituisce un singolo numero denominato *stima puntuale* (o più semplicemente *stima*). Mentre la stima è un numero, lo stimatore è una variabile aleatoria.
+
+#### Minimi Quadrati Ordinari (OLS)
+
+In questa applicazione, la stima dei parametri $\beta_0$ e $\beta_1$ è ottenuta minimizzando la somma dei *residui* al quadrato, $\sum_{i=1}^n e_i^2 = \sum_{i=1}^n(y_i-\hat{\mu}_i)^2=\sum_{i=1}^n(y_i-\hat{\beta}_0-\hat{\beta}_1x_i)^2$, chiamata SSE (sum of squared residuals). Questo metodo viene chiamato *metodo dei minimi quadrati ordinari*. In particolare, essendo la SSE una funzione convessa rispetto agli stimatori $\hat{\beta}_0$ e $\hat{\beta}_1$, basta porre le derivate della SSE agli stimatori uguale a 0 e trovare il punto di minimo. La soluzione restituisce i valori: $$\hat{\beta}_0=\bar{y}-\hat{\beta}_1\bar{x}$$ $$\hat{\beta}_1=\frac{\sum_{i=1}^n(y_i - \bar{y})(x_i - \bar{x})}{\sum_{i=1}^n(x_i - \bar{x})^2}$$
+
+#### Proprietà degli stimatori
+
+Per ogni parametro $\beta$ ci sono diversi possibili stimatori. Assumiamo che la distribuzione di probabilità dello stimatore $\hat{\beta}$ sia una normale, in cui la media e la mediana coincidono. Esistono diversi stimatori del centro della distribuzione: la media campionaria, la mediana campionaria, la media dei quartili inferiore e superiore, ecc. Quale scegliere? Si valutano le proprietà degli stimatori:
+
+##### Non distorsione
+
+La distorsione di uno stimatore è valutata come la differenza tra il suo valore atteso e il vero valore del parametro. In altre parole, se $\hat{\beta}$ è uno stimatore *non distorto* di $\beta$ $$E(\hat{\beta}) = \beta$$ Un esempio di stimatore distorto è la varianza campionaria, $\hat{\sigma}^2$, calcolata, a partire dai dati, come $\hat{\sigma}^2=[\sum_i(Y_i-\bar{Y})^2]/N$. Quella non distorta, definita *corretta*, è invece $S^2=[\sum_i(Y_i-\bar{Y})^2]/N-1$.
+
+##### Consistenza
+
+Uno stimatore viene detto *consistente* se tende ad avvicinarsi al vero valore del parametro al crescere di $N$. Ovvero, per ogni $\alpha \geq 0$, $$P(|\hat{\beta} - \beta| \geq \alpha) \rightarrow 0 \quad \text{per} \quad N \rightarrow \infty$$
+
+##### Efficienza
+
+Uno stimatore viene definito *efficiente* se, tra quelli non distorti, è associato alla varianza minima. Si consideri l'errore quadratico medio: $$MSE(\hat{\beta})=E[(\hat{\beta} - \beta)^2]$$
+
+Svolgendo i calcoli si arriva alla formula $$MSE(\hat{\beta})=E[(\hat{\beta} - E(\hat{\beta}))^2]+[E(\hat{\beta})-\beta]^2=var(\hat{\beta}) + (distorsione)^2$$
+
+Tra gli stimatori non distorti, diventa $MSE(\hat{\beta})=var(\hat{\beta})$, e lo stimatore *efficiente* è quello con varianza minima. Ad esempio, per osservazioni indipendenti da una distribuzione $N(\mu,\sigma)$, sia la media campionaria sia la mediana campionaria sono stimatori non distorti e consistenti di $\mu$. Tuttavia, la varianza della mediana campionaria è più grande di quella della media campionaria per cui la mediana campionaria non è una stimatore efficiente mentre la media campionaria lo è.
+
+##### Proprietà asintotiche
+
+Buoni stimatori dei parametri possono essere caratterizzati dalla consistenza, mentre la non distorsione e l'efficienza possono essere raggiunte solo asintoticamente. Questo significa che tale stimatore converge allo stimatore con tale proprietà all'aumentare di N.
+
+#### Stime OLS
+
+Si vuole scoprire adesso se gli stimatori utilizzati precedentemente, $\hat{\beta}_0$ e $\hat{\beta}_1$, per trovare la relazione tra radiazione solare e temperatura rispettano le proprietà sopra elencate. Il teorema di Gauss-Markov, così chiamato in onore dei matematici Carl Friedrich Gauss e Andrej Markov, è il teorema che afferma che in un modello lineare in cui gli errori hanno valore atteso nullo, sono incorrelati e omoschedastici, gli stimatori lineari corretti più efficienti sono gli stimatori ottenuti con il metodo dei minimi quadrati.
+
+Grazie al teorema di Gauss-Markov possiamo stimare i parametri con il metodo dei minimi quadrati, a patto che poi siano rispettate le assunzioni individuate dal teorema di Gauss-Markov. In tal caso, gli estimatori OLS sono corretti, consistenti ed efficienti.
+
+Nella stima di $\beta_1$, il numeratore corrisponde alla covarianza campionaria di $X,Y$ e il denominatore alla varianza campionaria di $X$. In R, possiamo calcolare i coefficienti utilizzando tale formula:
+
+```{r}
+beta1 <- cov(y,x)/var(x)
+beta0 <- mean(y) - beta1*mean(x)
+beta0
+beta1
+```
+
+Il parametro $\beta_1$ stimato in $\hat{\beta}_1$ è $\sim 0.9$ mentre il parametro $\beta_0$ stimato in $\hat{\beta}_0$ è $\sim 2$. L'interpretazione di tali parametri suggerisce che all'aumentare di 1 $J/mm^2$ di radiazione solare, la temperatura aumenta di 0.9 $°C$. Inoltre, quando la radiazione solare è zero, la temperatura è stimata di 2 $°C$. I parametri possono essere visualizzati tramite una retta sulla quale giaciono tutte le stime di $E(Y_i)$, ovvero $\hat{\mu}_i$, chiamati *valori adattati* per ogni $x_i$. Quando tracciamo questa equazione su un grafico l'intercetta $\beta_0$ rappresenta il valore di $E(Y)$ quando $x = 0$ mentre $\beta_1$ è la pendenza della retta.
+
+```{r}
+#| echo: false
+#| message: false
+
+library(plotly)
+library(ggplot2)
+mu_hat <- beta0 + beta1*x
+fig <- ggplot()+
+  geom_abline(slope = beta1, intercept = beta0,col="black")+
+  geom_segment(aes(x=x,xend=x,y=y,yend=mu_hat),col="gray",linetype=2)+
+  geom_point(aes(x=x,y=y),col="darkred",shape=4)+
+  theme_light()+
+  ylab("temperatura [°C]")+xlab("radiazione solare [J/mm2]")
+ggplotly(fig)
+```
+
+Per verificare che le assunzioni del teorema di Gauss-Markov siano verificate studiamo come si comportano i residui del modello: essi dovranno avere media zero, varianza costante, ed essere incorrelati. L'analisi dei residui viene anche definita *diagnostica*. Se le assunzioni sono verificate, gli stimatori sono BLUE (Best Linear Unbiased Estimator).
+
+#### Analisi dei residui
+
+Il residuo $e_i$ è uno stimatore del termine d'errore $\epsilon_i$ e si ottiene sottraendo dai dati campionari della variabile risposta $y_i$ la stima di $E(Y_i|x_i)$, o più semplicemente $\hat{\mu}_i$, ottenuta tramite l'equazione di predizione.
+
+```{r}
+mu_hat <- beta0 + beta1*x #valori adattati
+e <- y - mu_hat #residui
+mean(e) #dev'essere prossima allo zero
+```
+
+La media è molto vicina allo zero, quindi la prima assunzione del teorema di Gauss-Markov è verificata.
+
+La media della somma dei residui al quadrato è chiamata Mean Squared Error (MSE) la cui radice quadrata è chiamata Root Mean Squared Error (RMSE, o scarto quadratico medio). $$MSE=\frac{1}{n}\sum_{i=1}^ne_i^2 \qquad \qquad RMSE=\sqrt{MSE}$$ L'RMSE restituisce di quanto in media i valori osservati della variabile risposta si discostano dai valori adattati e viene generalmente utilizzato per indicare la precisione del modello. I residui sono utilizzati anche per valutare la bontà di adattamento del modello tramite diversi indici come R$^2$ o l'indice di Akaike.
+
+L'R$^2$ valuta la proporzione di varianza della variabile esplicativa, $E[(Y-\mu_y)^2]$, spiegata dal modello. si può calcolare in due modi: definiamo il Sum of Squared Error (SSE) come la somma dei residui al quadrato $\sum_{i=1}^ne_i^2$ e la Total Sum of Squared come la somma degli scarti dalla media al quadrato $\sum_{i=1}^n(y_i-\bar{y})^2$. La componente SSE rappresenta la variazione non spiegata dal modello mentre la componente TSS rappresenta la variazione con un modello nullo. L'indice di bontà di adattamento del modello R$^2$ è così definito: $$R^2=1-\frac{SSE}{TSS}=\frac{TSS-SSE}{TSS}=\frac{SSR}{TSS}$$ Dove SSR (Sum of Squared Regression) è la variabilità in $Y$ spiegata dal modello. Se N non è grande l'R$^2$ tende a sovrastimare, e quindi si utilizza l'R$^2$ corretto ($=1-((n-1)(1-R^2)/(n-(p+1))$ il quale è leggermente minore di R$^2$.
+
+```{r}
+SSE<-sum((e-mean(e))^2) # o var(e)
+TSS<-sum((y-mean(y))^2) # o var(y)
+R2 <- 1-(SSE/TSS)
+R2
+```
+
+Il 52.5% della variabilità totale di $Y$ è spiegata dal modello. Ricordatevi, come spiegato dallo statistico britannico Sir David Cox che "la stessa parola modello implica semplificazione e idealizzazione. L'idea che sistemi complessi della fisica, della biologia e della sociologia possano essere descritti in modo esatto con poche formule è evidentemente assurda. La costruzione di rappresentazioni idealizzate che catturino importanti aspetti stabili di tali sistemi costituisce però una parte vitale dell'analisi scientifica generale".
+
+##### Intervalli di confidenza e test d'ipotesi
+
+La distribuzione campionaria di uno stimatore, ovvero come si distribuiscono le stime ottenute con campioni casuali differenti, è di solito approssimata da una normale, indipendentemente dalla distribuzione del carattere osservato nella popolazione. Per cui la funzione di densità di probabilità dello stimatore sarà una normale con media nel suo valore atteso e varianza: $$var(\hat{\beta}_1)=var\left(\frac{\sum_{i=1}^n(y_i - \bar{y})(x_i - \bar{x})}{\sum_{i=1}^n(x_i - \bar{x})^2}\right)=\frac{var(e)}{\sum_{i=1}^n(x_i - \bar{x})^2}$$ $$var(\hat{\beta}_0)=var(\bar{y}-\hat{\beta}_1\bar{x})=\frac{var(e)\sum_{i=1}^nx_i^2}{n\sum_{i=1}^n(x_i-\bar{x})^2}$$ Per calcolare la varianza degli stimatori abbiamo bisogno della varianza dei residui, calcolati come il valore osservato della variabile $Y$ meno la stima del suo valore atteso $E(Y)$ (o $\hat{\mu}$).
+
+```{r}
+mu_hat <- beta0 + beta1*x
+e <- y - mu_hat
+#varianza di e = var(e)
+```
+
+Una volta ottenuto le varianze degli stimatori e conoscendo la loro distribuzione di probabilità possiamo costruire degli *intervalli di confidenza*. Il livello di confidenza corrisponde alla probabilità $1-\alpha$ che il vero parametro sia contenuto all'interno dell'intervallo scelto. Gli estremi sono detti *limiti di confidenza* e vengono calcolati con i dati. $\alpha$ è chiamato *probabilità d'errore* ed è solitamente vicino a 0 (es. 0.05,0.01, ecc.).
+
+Per costruire gli intervalli di confidenza per gli stimatori $\hat{\beta}_0$ e $\hat{\beta}_1$ sfruttiamo il fatto che le distribuzioni siano approssimate da una normale. I valori che contengono il 95% dell'area sottesa da una $N(0,1)$ sono $\sim \pm 1.96$, nel nostro caso la normale è centrata intorno a $E(\hat{\beta})$ e varianza come calcolato precedentemente. Aggiungiamo e sottraiamo 1.96 per la deviazione standard dello stimatore alla stima per trovare l'intervallo di confidenza del parametro al 95%. In R:
+
+```{r}
+n<-length(x)
+var_beta1 <- var(e)/sum((x-mean(x))^2)
+var_beta0 <- (var(e)*sum(x^2))/(n*sum((x-mean(x))^2))
+CI_lo_beta0 <- beta0 - 1.96*sqrt(var_beta0) #estremo inferiore
+CI_up_beta0 <- beta0 + 1.96*sqrt(var_beta0) #estremo superiore
+CI_lo_beta1 <- beta1 - 1.96*sqrt(var_beta1) #estremo inferiore
+CI_up_beta1 <- beta1 + 1.96*sqrt(var_beta1) #estremo superiore
+c(CI_lo_beta0,CI_up_beta0) #intervallo di beta0
+c(CI_lo_beta1,CI_up_beta1) #intervallo di beta1
+```
+
+Quindi,
+
+```{r}
+#| echo: false
+
+cat("L'intervallo di confidenza al 95% per il parametro beta 0 è",CI_lo_beta0,CI_up_beta0)
+cat("L'intervallo di confidenza al 95% per il parametro beta 1 è",CI_lo_beta1,CI_up_beta1)
+
+```
+
+Nonostante dall'uso degli intervalli di confidenza si possa già intuire che tali parametri siano verosimilmente diversi da zero, possiamo effettuare un test su questa ipotesi. Il test, per entrambi i $\beta$ si configura in questo modo: $$H_0:\beta=0 \qquad H_1:\beta\neq0$$ Per rispondere (accettando o rigettando l'ipotesi nulla $H_0$), calcoliamo la statistica test come il numero di errori standard di distanza tra la stima e il valore $H_0$ di 0, in altre parole, dividiamo la stima per il suo errore standard. $$T=\frac{\hat{\beta}-0}{\sqrt{var(\hat{\beta})}}$$ Siamo interessati alla probabilità che, data una distribuzione $t$ di Student (approssimabile ad una normale N(0,1) quando $N \geq 30$), si osservi il valore della statistica test ($T$). Tale probabilità è chiamata *p-value*. Una probabilità molto bassa (es. 10\^-6) suggerisce di rigettare l'ipotesi nulla e che quindi sussista una relazione lineare tra le variabili considerate.
+
+```{r}
+T_0 <- beta0/sqrt(var_beta0)
+T_1 <- beta1/sqrt(var_beta1)
+2*pt(T_0,df=n-2, lower.tail = F) #t di student per beta 0
+2*pnorm(T_0, lower.tail = F) #normale per beta 0
+2*pt(T_1,df=n-2, lower.tail = F) #t di student per beta 1
+2*pnorm(T_1, lower.tail = F) #normale per beta 1
+```
+
+In questo caso rigettiamo l'ipotesi nulla per entrambi gli stimatori.
+
+#### Intervalli di confidenza dei valori adattati e intervalli di previsione per Y
+
+Il modello può anche essere utilizzato per costruire degli intervalli di confidenza intorno al valore adattato. In particolare, la varianza del valore adattato ($\hat{\mu}_0$) in $x_0$ è $$var(\hat{\mu}_0)=\sigma^2\left[\frac{1}{n}+\frac{(x_0-\bar{x})^2}{\sum_{i=1}^n(x_i-\bar{x})^2} \right]$$
+
+Ovviamente intervallo di confidenza dipende dalla precisione del modello ($\sigma$), ma inoltre la varianza aumenta in modo simmetrico all'allontanarsi del $x_0$ da $\bar{x}$. La varianza dello stimatore è utilizzata per costruire l'intervallo di confidenza (approsimabile ad una normale e quindi $\hat{\mu}_i \pm 1.95*\sqrt{var(\hat{\mu}_i)}$) è generalmente rappresentato graficamente come un'area intorno alla retta di regressione.
+
+```{r}
+var_mu <- c()
+for (i in 1:length(x)) {
+  var_mu[i] <- var(e)*((1/n)+((x[i]-mean(x))^2/sum((x-mean(x))^2)))
+}
+
+fig <- ggplot()+
+  geom_abline(slope = beta1, intercept = beta0,col="black")+
+  geom_segment(aes(x=x,xend=x,y=y,yend=mu_hat),col="gray",linetype=2)+
+  geom_point(aes(x=x,y=y),col="darkred",shape=4)+
+  theme_light()+
+  geom_ribbon(aes(x=x,ymin=mu_hat-1.96*sqrt(var_mu),ymax=mu_hat+1.96*sqrt(var_mu)),
+              fill="blue",alpha=.5)+
+  ylab("temperatura [°C]")+xlab("radiazione solare [J/mm2]")
+ggplotly(fig)
+```
+
+Possiamo anche costruire un intervallo progettato per contenere un'osservazione futura, chiamato intervallo di previsione. Rispetto alla stima della retta di regressione siamo più limitati nell'accuratezza con cui possiamo prevedere un'osservazione futura. L'intervallo di previsione in $x = x_0$ è
+
+$$\sqrt{\sigma^2\left[1+\frac{1}{n}+\frac{(x_0-\bar{x})^2}{\sum_{i=1}^n(x_i-\bar{x})^2} \right]}$$
+
+```{r}
+CI_mu <- c()
+for (i in 1:length(x)) {
+  CI_mu[i] <- var(e)*(1+(1/n)+((x[i]-mean(x))^2/sum((x-mean(x))^2)))
+}
+
+fig <- ggplot()+
+  geom_abline(slope = beta1, intercept = beta0,col="black")+
+  geom_segment(aes(x=x,xend=x,y=y,yend=mu_hat),col="gray",linetype=2)+
+  geom_point(aes(x=x,y=y),col="darkred",shape=4)+
+  theme_light()+
+  geom_ribbon(aes(x=x,ymin=mu_hat-1.96*sqrt(CI_mu),ymax=mu_hat+1.96*sqrt(CI_mu)),
+              col="red",alpha=.5)+
+  ylab("temperatura [°C]")+xlab("radiazione solare [J/mm2]")
+ggplotly(fig)
+```
+
+<!-- ### Distribuzione congiunta -->
+
+<!-- La distribuzione di probabilità di una singola variabile aleatoria è chiamata *distribuzione marginale*. Nel caso di due variabili aleatorie $X$ e $Y$ si può quindi calcolare la probabilità condizionata di uno rispetto all'altro, ovvero $$f(y|x)=\frac{f(x,y)}{f_1(x)}$$ -->
+
+<!-- ```{r} -->
+
+<!-- #| message: false -->
+
+<!-- #| echo: false -->
+
+<!-- # install.packages("plotly") -->
+
+<!-- library(plotly) -->
+
+<!-- x <- dnorm(seq(-3,3,.1)) -->
+
+<!-- y <- dnorm(seq(-3,3,.1)) -->
+
+<!-- df <- as.data.frame(expand.grid(x,y)) -->
+
+<!-- names(df)<-c("x","y") -->
+
+<!-- df$z <- df$x * df$y -->
+
+<!-- z<-matrix(df$z,nrow=length(x),ncol=length(y)) -->
+
+<!-- fig <- plot_ly(z = ~z,x=seq(-3,3,.1),y=seq(-3,3,.1)) -->
+
+<!-- fig <- fig %>% layout(title="Bivariate normal distribution", -->
+
+<!--                       scene=list(xaxis=list(title='f(x)'), -->
+
+<!--                                  yaxis=list(title='f(y)'), -->
+
+<!--                                  zaxis=list(title='f(x,y)'))) -->
+
+<!-- fig <- fig %>% add_surface(contours = list( -->
+
+<!--     z = list( -->
+
+<!--       show=TRUE, -->
+
+<!--       usecolormap=TRUE, -->
+
+<!--       highlightcolor="#ff0000", -->
+
+<!--       project=list(z=TRUE) -->
+
+<!--       ) -->
+
+<!--     )) -->
+
+<!-- fig -->
+
+<!-- ``` -->
+
+#### Funzioni automatiche
+
+```{r}
+#automatic functions
+lmm <- lm(y~x)
+mu_hat_aut <- predict(lmm)
+mu_hat[1:10]
+mu_hat_aut[1:10]
+2*pt(T_0,df=n-2, lower.tail = F) #t di student per beta 0
+2*pt(T_1,df=n-2, lower.tail = F) #t di student per beta 1
+R2
+summary(lmm)
+mu_hat_aut <- predict(lmm,se.fit = T)
+sqrt(var_mu[1:10])
+mu_hat_aut$se.fit[1:10]
+
+```
+
+### Relazioni non lineari
+
+Ad esempio definiamo le nostre due variabili aleatorie $X$: umidità nell'aria e $Y$: quantità di pioggia caduta. Essi esibiscono sicuramente una relazione poichè per piovere è richiesta un umidità minima nell'aria. Vediamo il grafico a dispersione. La regressione lineare può essere utilizzata?
+
+```{r}
+#| echo: false
+
+load("data/Agrimonia_dataset.Rdata")
+set.seed(1)
+n<-500
+agr_df <- AgrImOnIA_Dataset_v_3_0_0[sample(1:nrow(AgrImOnIA_Dataset_v_3_0_0),n),]
+x <- agr_df$WE_rh_mean
+y <- agr_df$WE_tot_precipitation
+plot(x,y,xlab="umidità [%]",ylab="precipitazioni [m/giorno]")
+```

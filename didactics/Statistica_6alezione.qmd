@@ -1,0 +1,309 @@
+---
+title: "Statistica_6alezione"
+author: "Alessandro Fusta Moro"
+format: html
+editor: visual
+---
+
+# RIPASSO
+
+### Probabilità condizionata
+
+$P(A|B) = \frac{P(A \cap B)}{P(B)} \qquad \text{cioè} \qquad P(A \cap B) = P(A|B)P(B)$
+
+### Principio delle probabilità totali
+
+$P(A) = P(B)P(A|B) + P(\bar{B})P(A|\bar{B}) = P(A \cap B) + P(A \cap \bar{B})$
+
+### Teorema di Bayes
+
+$P(A|B) = \frac{P(A)P(B|A)}{P(B)} \qquad \text{da cui} \qquad P(A) = \frac{P(A|B)P(B)}{P(B|A)}$
+
+### Esercizio
+
+Una macchina produce pezzi difettosi (evento B) con probabilità $P(B)= 0.001$. Una procedura di controllo scarta pezzi difettosi (evento A condizionato da B) con probabilità $P(A|B) = 0.9$ mentre scarta pezzi non difettosi con probabilità $P(A|\bar{B})= 0.01$. Qual’è la probabilità $P(B|A)$ che un pezzo sia non difettoso dato che è stato scartato?
+
+Dal principio delle probabilità totali (sostituisco P(A)):
+
+$P(B)P(A|B) + P(\bar{B})P(A|\bar{B}) = \frac{P(A|B)P(B)}{P(B|A)}$
+
+$P(B|A) = \frac{P(A|B)P(B)}{P(B)P(A|B) + P(\bar{B})P(A|\bar{B})}$
+
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
+
+rm(list = ls())
+P_B = 0.001 #P(B) probabilità di produrre pezzi difettosi
+P_AcondB = 0.9 #P(A|B) la prob di scartarlo quando il pezzo è difettoso
+P_AcondcompB = 0.01 #P(A|compB) la prob di scartare non difettosi
+
+#probabilità che il pezzo scartato fosse difettoso = P(B|A)
+P_BcondA <-
+  P_AcondB * P_B / ((P_B * P_AcondB) + ((1 - P_B) * P_AcondcompB))
+P_BcondA # =~ 8 %
+```
+
+### Indipendenza in probabilità
+
+$P(A \cap B) = P(A)P(B)$
+
+$P(A|B) = \frac{P(A \cap B)}{P(B)} = \frac{P(A)P(B)}{P(B)} = P(A)$
+
+# Modelli statistici
+
+${p(x,θ): θ ∈ Θ,x ∈ S}$ per variabili casuali discrete ${f(x,θ): θ ∈ Θ,x ∈ S}$ per variabili casuali continue
+
+Esempio di un modello noto: binomiale
+
+```{r}
+bin <- function(n, k, p) {
+  bin <- choose(n,k)*
+    p ^ (k) * (1 - p) ^ (n - k) # con 0 < p < 1 e x=(0,1)
+  return(bin)
+}
+bin(10,5,0.2)
+```
+
+```{r}
+dbinom(5,10,0.2)
+```
+
+E così anche per Poisson, Normale, esponenziale (ed altre)
+
+## Campione casuale
+
+Come generare un campione casuale dato un modello. Le **variabili casuali** $X_i \text{ con } i = 1,\ldots,n$ servono per modellare le **osservazioni campionarie** $x_i \text{ con } i = 1,\ldots,n$. L'**inferenza statistica** consiste nel fare congetture sull’incognito vettore di parametri $\theta = [\theta_1,\ldots,\theta_p]$ basandosi su una realizzazione campionaria $[x_1,\ldots,x_n]$.
+
+La definizione di campione casuale da un modello statistico formalizza che lo stesso fenomeno ripetibile con risultato incerto viene osservato n volte (le n variabili casuali campionarie con la stessa funzione di ripartizione) e che le n osservazioni sono ottenute in modo in- dipendente (la condizione di indipendenza in probabilità delle n variabili casuali campionarie).
+
+```{r}
+set.seed(1)
+x <- sample(1:10, 100, replace = T) #da un uniforme discreta
+```
+
+Una funzione delle sole variabili casuali campionarie è chiamata **statistica**. Le statistiche sono uno degli strumenti di base utilizzati nell’ineferenza statistica. Se usate in un problema di stima puntuale le statistiche prendono il nome di **stimatori** se usate in un problema di verifica di ipotesi vengono chiamate **statistiche test**.
+
+## Stima puntuale
+
+### Media campionaria
+
+```{r}
+somma <- sum(x)
+somma_cumulata <- cumsum(x)
+n <- length(x)
+media_campionaria <- somma / n
+mu <- media_campionaria
+mu
+mean(x)
+```
+
+### Varianza campionaria
+
+```{r}
+n ^ -1 * sum((x - mu) ^ 2)
+var(x)
+```
+
+### Varianza campionaria corretta
+
+```{r}
+(n - 1) ^ -1 * sum((x - mu) ^ 2)
+var(x)
+```
+
+### frequenza cumulata relativa campionaria
+
+```{r}
+X <- seq(1, 10, 1)
+Cn <- c()
+for (i in X) {
+  Cn <- c(Cn, n ^ -1 * sum(x <= i))
+}
+plot(Cn,type = "h",xlab="x")
+```
+
+### frequenza relativa campionaria
+
+```{r}
+Fn <- c()
+for (i in X) {
+  Fn <- c(Fn, n ^ -1 * sum(x == i))
+}
+plot(Fn,ylim = c(0,0.3),type = "h",xlab="x")
+```
+
+# Funzione di verosimiglianza
+
+La funzione di probabilità congiunta delle variabili casuali campionarie è definitita come:
+
+$V(x_1,x_2,\dots,x_n) = p(x_1,\theta) \times p(x_2,\theta) \times \ldots \times p(x_n,\theta) = \prod_{i=1}^n p(x_i,\theta)$
+
+ovvero il prodotto delle singole probabilità. Vediamo un esempio:
+
+```{r}
+V<-c() #initialization
+theta.s <- seq(.1,.9,.01)
+for (theta in theta.s) {
+  V <- c(V,prod(rep(bin(1,1,theta),50),#successi
+                rep(bin(1,0,theta),50)#insuccessi
+                ))
+  # print(V[length(V)])
+}
+plot(y=V,x=theta.s, xlab="theta",type = "l")
+```
+
+Aumentiamo il numero dei successi
+
+```{r}
+V<-c() #initialization
+theta.s <- seq(.1,.9,.01)
+for (theta in theta.s) {
+  V <- c(V,prod(rep(bin(1,1,theta),90),#successi
+                rep(bin(1,0,theta),10)#insuccessi
+                ))
+  # print(V[length(V)])
+}
+plot(y=V,x=theta.s, xlab="theta",type = "l")
+90/100
+```
+
+Diminuiamo la numerosità del campione
+
+```{r}
+V<-c() #initialization
+theta.s <- seq(.1,.9,.01)
+for (theta in theta.s) {
+  V <- c(V,prod(rep(bin(1,1,theta),10),#successi
+                rep(bin(1,0,theta),10)#insuccessi
+                ))
+  # print(V[length(V)])
+}
+plot(y=V,x=theta.s, xlab="theta",type = "l")
+```
+
+## Log-verosimiglianza
+
+Spesso si usa la versione logaritmica per rendere il calcolo più agevole, chiamata funzione di log-verosimiglianza: $L(\theta) = ln(p(x_1,\theta) \times \ldots \times p(x_n,\theta)) = ln(p(x_1,\theta) + \ldots + ln(p(x_n,\theta) = \sum_{i=1}^n ln(p(x_i,n))$
+
+```{r}
+L<-c() #initialization
+theta.s <- seq(.1,.9,.01)
+for (theta in theta.s) {
+  L <- c(L,sum(log(rep(bin(1,1,theta),50)),#successi
+                log(rep(bin(1,0,theta),50))#insuccessi
+                ))
+  # print(V[length(V)])
+}
+plot(y=L,x=theta.s, xlab="theta",type = "l")
+```
+
+### log-verosimiglianza
+
+#### Binomiale
+
+$L(p)=\sum_{i=1}^n x_i ln(p) + (n - \sum_{i=1}^n x_i) ln(1-p)$
+
+```{r}
+L<-c() #initialization
+theta.s <- seq(.1,.9,.01)
+suc <- 50 #successi
+N <- 100
+for (theta in theta.s) {
+L <- c(L,sum(rep(log(theta),suc))+sum(rep(log(1-theta),N-suc)))
+}
+plot(y=L,x=theta.s, xlab="theta",type = "l")
+```
+
+#### Esponenziale
+
+```{r}
+L<-c() #initialization
+theta.s <- seq(.1,5,.1)
+x <- rexp(100)
+for (theta in theta.s) {
+L <- c(L,length(x)*log(theta) - (theta*sum(x)))
+}
+plot(y=L,x=theta.s, xlab="theta",type = "l")
+```
+
+e così via per Poisson, Normale ecc.
+
+# Proprietà delle Stime Puntuale
+
+### Correttezza
+
+Il valore atteso deve coincidere con la stima \### Consistenza Ovvero la probabilità di un errore di stima grossolano deve tendere a zero al di- vergere della numerosità campionaria n \### Efficienza La varianza dev'essere la minore possibile (per approf Teorema di Cramer-Rao)
+
+#### La media campionaria è uno stimatore corretto e consistente!
+
+(vedi inizio script 5a lezione)
+
+# Regressione lineare
+
+Caricare un dataset in R
+
+```{r}
+data(mtcars)
+head(mtcars)
+```
+
+Analisi Esplorativa dei Dati
+
+```{r}
+# Codice
+summary(mtcars)
+str(mtcars)
+plot(mtcars$hp, mtcars$mpg, main="HP vs MPG", xlab="Horsepower", ylab="Miles per Gallon")
+plot(mtcars$wt, mtcars$mpg, main="Weight vs MPG", xlab="Weight", ylab="Miles per Gallon")
+```
+
+Creazione del Modello di Regressione Lineare
+
+```{r}
+model <- lm(mpg ~ hp, data=mtcars)
+summary(model)
+```
+
+Diagnostica dei residui
+
+```{r}
+plot(model)
+```
+
+Regressione Lineare Multipla
+
+```{r}
+model2 <- lm(mpg ~ hp + wt, data=mtcars)
+summary(model2)
+```
+
+Diagnostica dei residui
+
+```{r}
+plot(model2)
+```
+
+Predizione con il Modello
+
+```{r}
+newdata <- data.frame(hp=150, wt=3.2)
+predict(model2, newdata)
+```
+
+Validazione del Modello
+
+```{r}
+set.seed(123)  # Per riproducibilità
+sample_index <- sample(seq_len(nrow(mtcars)), size = 0.7*nrow(mtcars))
+train <- mtcars[sample_index, ]
+test <- mtcars[-sample_index, ]
+
+model_train <- lm(mpg ~ hp + wt, data=train)
+predictions <- predict(model_train, test)
+
+# Calcolo dell'errore medio quadratico (MSE)
+mse <- mean((test$mpg - predictions)^2)
+mse
+```
