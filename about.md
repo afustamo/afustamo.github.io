@@ -1,2 +1,0 @@
-# ecco qui l'about
-
